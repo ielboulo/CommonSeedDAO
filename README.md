@@ -1,1 +1,1 @@
-# Common SEED DAO - Crowndfunding Securely 
+# Common SEED DAO - Crowdfunding Securely 
