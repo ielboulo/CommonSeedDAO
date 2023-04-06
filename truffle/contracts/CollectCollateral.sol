@@ -1,4 +1,5 @@
 pragma solidity 0.8.19;
+import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract CollateralVault {
     address public admin;
@@ -46,23 +47,6 @@ contract CollateralVault {
         emit WithdrawalPermissionRevoked();
     }
 
-    function vote() public {
-        require(balances[msg.sender] > 0, "You do not have any collateral to vote with");
-        require(!voted[msg.sender], "You have already voted");
-
-        voted[msg.sender] = true;
-
-        uint256 totalVoted = 0;
-        for (uint256 i = 0; i < msg.sender.balance; i++) {
-            if (voted[msg.sender]) {
-                totalVoted += balances[msg.sender];
-            }
-        }
-
-        if (totalVoted >= threshold) {
-            grantWithdrawalPermission();
-        }
-    }
 
     function withdraw(uint256 amount) public {
         require(canWithdraw, "Withdrawal permission not granted");
