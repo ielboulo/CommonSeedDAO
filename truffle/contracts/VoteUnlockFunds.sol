@@ -5,15 +5,17 @@ import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "../node_modules/@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "../node_modules/@openzeppelin/contracts/utils/Strings.sol";
+
 
 import "./FundraisingProject.sol";
 import "./ProjectInfo.sol";
 
 
 contract VoteUnlockFunds  is Ownable {
-
-    FundraisingProject public fundraisingProjects;
-    ProjectInfo projectInfoContract;
+    
+    ProjectInfo         projectInfoContract;
+    FundraisingProject  fundraisingProjects;
 
 
     // Structure pour stocker les résultats du vote pour une proposition de déblocage de fonds
@@ -43,18 +45,16 @@ contract VoteUnlockFunds  is Ownable {
         event UnlockProposalClose(uint _projectId, uint _phase);
         event VotingSessionOpen(uint _projectId, uint _phase);
         event VotingSessionClose(uint _projectId, uint _phase);
-        event Voted(uint _projectId, uint _phase, address _addr);
+        event Voted(uint _projectId, uint _phase, address _addr, bool _decision);
         event UnlockAccepted(uint _projectId, uint _phase);
         event UnlockRejected(uint _projectId, uint _phase);
         event UnlockExecuted(uint _projectId, uint _phase, uint256 _amount);
 
 //// 
     
-    constructor(address _projectInfoContractAddress, address _fundraisingProjects) {   
+    constructor(address _projectInfoContractAddress, address _fundraisingProjectsAddress) {   
         projectInfoContract = ProjectInfo(_projectInfoContractAddress);
-        fundraisingProjects = FundraisingProject(_fundraisingProjects);
-
-
+        fundraisingProjects = FundraisingProject(_fundraisingProjectsAddress);
     }
 
     modifier isValidProject(uint _projectId, uint _phase) {
@@ -62,7 +62,18 @@ contract VoteUnlockFunds  is Ownable {
         require(projectInfoContract.getFundraisingStatus(_projectId) == ProjectInfo.FundraisingStatus.FundraisingSuccessful, "ERROR : Project Not Funded Successfully!");
         
         uint currentPhase = projectInfoContract.getProjectCurrentPhase(_projectId); 
-        require( currentPhase !=  _phase, "ERROR : Invalid Phase Id !");
+
+        string memory errorMessage = string(abi.encodePacked(
+            "ERROR: Invalid Phase Id! currentPhase: ",
+            Strings.toString(currentPhase),
+            " _phase: ",
+            Strings.toString(_phase)
+        ));
+        require(currentPhase == _phase, errorMessage);
+        //require( currentPhase !=  _phase, "ERROR : Invalid Phase Id !");
+        // require( currentPhase !=  _phase,
+        // string(abi.encodePacked(
+        // "ERROR: Invalid Phase Id! currentPhase: ", currentPhase, " _phase: ", _phase)));
         _;
     }
 
@@ -72,31 +83,31 @@ contract VoteUnlockFunds  is Ownable {
     }
 
     function unlockProposalOpening(uint _projectId, uint _phase) external onlyOwner  { // TODO isValidProjId(projectId)
-        require(projectInfoContract.getVoteUnlockStatus(_projectId, _phase) == ProjectInfo.VoteUnlockStatus.UnlockProposalOpen, "Voters Registration not open !");
+        require(projectInfoContract.getVoteUnlockStatus(_projectId, _phase) == ProjectInfo.VoteUnlockStatus.UnlockProposalOpen, "UnlockProposal not open !");
         emit UnlockProposalOpen(_projectId, _phase);
     }
 
     function UnlockProposalClosing(uint _projectId, uint _phase) external onlyOwner  { // TODO isValidProjId(projectId)
-        require(projectInfoContract.getVoteUnlockStatus(_projectId, _phase) == ProjectInfo.VoteUnlockStatus.UnlockProposalOpen, "Voters Registration not open !");
+        require(projectInfoContract.getVoteUnlockStatus(_projectId, _phase) == ProjectInfo.VoteUnlockStatus.UnlockProposalOpen, "UnlockProposal not open !");
         projectInfoContract.setVoteUnlockStatus(_projectId, _phase, ProjectInfo.VoteUnlockStatus.UnlockProposalClose);
         emit UnlockProposalClose(_projectId, _phase);
     }
 
     function VotingSessionOpening(uint _projectId, uint _phase) external onlyOwner  { // TODO isValidProjId(projectId)
-        require(projectInfoContract.getVoteUnlockStatus(_projectId, _phase) == ProjectInfo.VoteUnlockStatus.UnlockProposalClose, "Voters Registration not open !");
+        require(projectInfoContract.getVoteUnlockStatus(_projectId, _phase) == ProjectInfo.VoteUnlockStatus.UnlockProposalClose, "UnlockProposal not closed !");
         projectInfoContract.setVoteUnlockStatus(_projectId, _phase, ProjectInfo.VoteUnlockStatus.VotingSessionOpen);
         emit VotingSessionOpen(_projectId, _phase);
     }
 
     function VotingSessionClosing(uint _projectId, uint _phase) external onlyOwner  { // TODO isValidProjId(projectId)
-        require(projectInfoContract.getVoteUnlockStatus(_projectId, _phase) == ProjectInfo.VoteUnlockStatus.VotingSessionOpen, "Voters Registration not open !");
+        require(projectInfoContract.getVoteUnlockStatus(_projectId, _phase) == ProjectInfo.VoteUnlockStatus.VotingSessionOpen, "Voting Session not open !");
         projectInfoContract.setVoteUnlockStatus(_projectId, _phase, ProjectInfo.VoteUnlockStatus.VotingSessionClose);
         emit VotingSessionClose(_projectId, _phase);
     }
 
     // Phase d'ajout de proposal
     function addUnlockProposal(uint _projectId, uint _phase, uint _amountToUnlockPercentage, uint _deadline) onlyAdminOrProjectOwner(_projectId) isValidProject(_projectId, _phase) public {
-        require(projectInfoContract.getVoteUnlockStatus(_projectId, _phase) == ProjectInfo.VoteUnlockStatus.UnlockProposalOpen, "Voters Registration not open !");
+        require(projectInfoContract.getVoteUnlockStatus(_projectId, _phase) == ProjectInfo.VoteUnlockStatus.UnlockProposalOpen, "Unlock Proposal  not open !");
         require(projectInfoContract.getProjectCurrentPhase(_projectId) == _phase, "ERROR : Invalid Phase ID !");
         require(!unlockProposals[_projectId][_phase].executed, "Unlock proposal already executed");
 
@@ -106,14 +117,15 @@ contract VoteUnlockFunds  is Ownable {
 
     // Phase de Vote
 
-    function isEligibleVoter(uint _projectId, uint _phase, address _addr) public isValidProject(_projectId, _phase) returns(bool)
+    function setIfEligibleVoter(uint _projectId, uint _phase, address _addr) public isValidProject(_projectId, _phase)
     {
-        if(projectInfoContract.hasContributed(_projectId, _addr) && projectInfoContract.getProjectOwner(_projectId) != _addr)
-        {
-            investorVoters[_projectId][_phase][_addr].isEligible = true;
-            return true;
-        }
-        return false;
+        require(projectInfoContract.hasContributed(_projectId, _addr) && projectInfoContract.getProjectOwner(_projectId) != _addr, "Address not Eligible for vote");
+        investorVoters[_projectId][_phase][_addr].isEligible = true; 
+    }
+
+    function getIfEligibleVoter(uint _projectId, uint _phase, address _addr) external view  onlyOwner isValidProject(_projectId, _phase) returns(bool)
+    {
+        return investorVoters[_projectId][_phase][_addr].isEligible; 
     }
 
     modifier onlyInvestorVoters(uint _projectId, uint _phase)
@@ -121,11 +133,11 @@ contract VoteUnlockFunds  is Ownable {
         require(investorVoters[_projectId][_phase][msg.sender].isEligible, "Not Allowed to participate");
         _;
     }
-    // onlyInvestorVoters(_projectId, _phase) : no list voters , when clocking on button, check if eligible or not 
+    // onlyInvestorVoters(_projectId, _phase) : no list voters , when clicking on button, check if eligible or not 
     function setVote(uint _projectId, uint _phase, bool _decision) isValidProject(_projectId, _phase) public 
     {
-        require(isEligibleVoter(_projectId, _phase, msg.sender),"Not Allowed to participate");
-        require(projectInfoContract.getVoteUnlockStatus(_projectId, _phase) == ProjectInfo.VoteUnlockStatus.VotingSessionOpen, "Voters Registration not open !");
+        setIfEligibleVoter(_projectId, _phase, msg.sender); // TODO : to refactor 
+        require(projectInfoContract.getVoteUnlockStatus(_projectId, _phase) == ProjectInfo.VoteUnlockStatus.VotingSessionOpen, "Voting Session not open !");
         require(!investorVoters[_projectId][_phase][msg.sender].hasVoted, "You have Already Voted !");
 
         investorVoters[_projectId][_phase][msg.sender].decision = _decision;
@@ -137,12 +149,12 @@ contract VoteUnlockFunds  is Ownable {
         else {
             unlockProposals[_projectId][_phase].noVotes +=1;         
         }
-        emit Voted(_projectId, _phase, msg.sender);
+        emit Voted(_projectId, _phase, msg.sender, _decision);
     }
 
     function tallyVotes(uint _projectId, uint _phase) public onlyOwner 
     {
-        require(projectInfoContract.getVoteUnlockStatus(_projectId, _phase) == ProjectInfo.VoteUnlockStatus.VotingSessionClose, "Voters Registration not open !");
+        require(projectInfoContract.getVoteUnlockStatus(_projectId, _phase) == ProjectInfo.VoteUnlockStatus.VotingSessionClose, "Voting Session not Closed !");
 
         UnlockProposal storage proposal = unlockProposals[_projectId][_phase];
         uint totalVotesWeighted;
@@ -207,35 +219,3 @@ contract VoteUnlockFunds  is Ownable {
         emit UnlockExecuted(_projectId,  _phase,  amountToUnlock);
     }
 }
-
-        //FundraisingProjects.Project storage project = fundraisingProjects.projects(_projectId); // TODO may return getProject(_projectId) ?  
-
-
-        // uint256 amountToUnblockInWei = totalRaised.mul(amountToUnblockInPer).div(100);
-        // return amountToUnblockInWei.div(DECIMALS);
-
-        // Calculate the quorum for this proposal
-        ////uint quorumWeighted; quorumWeighted = totalVotesWeighted * 10 / 100; // TODO : retrieve the value from SeedToken smart contract : holdersCount
-        
-
-   // using SafeMath for uint256;
-   // uint256 constant DECIMALS = 10 ** 18;
-
-    // function tallyVotes(uint _projectId, uint _phase) public onlyOwner { // returns (bool, uint)
-
-    //     UnlockProposal storage proposal = unlockProposals[_projectId][_phase]; // TODO Ilham storage 
-    //     uint totalVotes = proposal.yesVotes + proposal.noVotes; // TODO pondéré poids invest.
-    //     uint quorum = totalVotes * 10 / 100; // quorum is 10% of the total number of votes
-
-    //     if (totalVotes == 0 ) {
-    //         // No votes !
-    //         proposal.accepted = false; // proposal rejected 
-    //     }
-
-    //     if (proposal.yesVotes > proposal.noVotes) {
-    //         // the proposal has passed
-    //         if (proposal.yesVotes >= quorum) {
-    //             proposal.accepted = true; // proposal accepted & to be executed 
-    //         }
-    //     }
-    // }

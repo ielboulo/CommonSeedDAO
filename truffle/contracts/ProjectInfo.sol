@@ -233,6 +233,12 @@ contract ProjectInfo  is Ownable {
     function getNumInvestors(uint _projectId) external view returns(uint) {
         return projectsPI[_projectId].numberOfInvestors;
     }
+    function incrementNumInvestors(uint _projectId) public {
+        projectsPI[_projectId].numberOfInvestors +=1;
+    }
+    function decrementNumInvestors(uint _projectId) public {
+        projectsPI[_projectId].numberOfInvestors -=1;
+    }
 
     function hasContributed(uint _projectId, address _investor) external view returns (bool) 
     {

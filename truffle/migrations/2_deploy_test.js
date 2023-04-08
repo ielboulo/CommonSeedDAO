@@ -1,7 +1,6 @@
 // 3_test_deploy_contracts.js
 
 const MockToken = artifacts.require("MockToken");
-const FundraisingProject = artifacts.require("FundraisingProject");
 
 const SeedToken = artifacts.require("SeedToken");
 const ProjectInfo = artifacts.require("ProjectInfo");

@@ -23,14 +23,6 @@ contract('FundraisingProject', function (accounts) {
     await this.projectInfo.addProject(projectOwner, "DAO SEED", _goalAmount, 3, 100000, _minContribution, { from: owner });  
     await this.projectInfo.setVoteValidationStatus( project_1,  ProjectInfo.VoteValidationStatus.ProjectAccepted);
 
-    //(address _projectOwner, string memory _projectTitle, uint _goalAmount, 
-   //uint _totalPhases, uint256 _fundraisingDeadline, uint _minContribution) external onlyOwner 
-
-  // const amount = web3.utils.toWei("10000", "ether"); // Convert 10.000 mUSDT to its smallest unit
-	// for (let i = 0; i < 6; i++) {
-	// 	await mockToken.transfer(accounts[i], amount);
-	// }
-
     // investors have 10.000 mUSDT in their wallets :
     const amount_investor1 = web3.utils.toWei("10000", "ether"); // Convert 10.000 mUSDT to its smallest unit
     await this.mockToken.transfer(investor1, amount_investor1);
@@ -44,14 +36,14 @@ contract('FundraisingProject', function (accounts) {
     // set fundraising deadline :
     const now = await web3.eth.getBlock('latest').then(block => block.timestamp);
     const days = 7 * 24 * 60 * 60; // 7 days in seconds
-    const _now = now + days;
-    await this.projectInfo.setFundraisingDeadline(project_1, _now);
+    const deadline = now + days;
+    await this.projectInfo.setFundraisingDeadline(project_1, deadline);
   });
 
       
   it('should contribute successfully ', async function () {
     // Test initial state of the contract
-    await this.fundraisingProject.openFundraisingPhase(project_1);
+    await this.fundraisingProject.openFundraisingPhase(project_1, { from: owner });
     // FundraisingPhaseOpen
     const  currentFundraisingStatus = await this.projectInfo.getFundraisingStatus(project_1);
     expect(currentFundraisingStatus.toString()).to.equal("0");
@@ -73,7 +65,7 @@ contract('FundraisingProject', function (accounts) {
       
   it('should revert if minimum amount of contribution is not respected ', async function () {
     // Test initial state of the contract
-    await this.fundraisingProject.openFundraisingPhase(project_1);
+    await this.fundraisingProject.openFundraisingPhase(project_1, { from: owner });
     // FundraisingPhaseOpen
     const  currentFundraisingStatus = await this.projectInfo.getFundraisingStatus(project_1);
     expect(currentFundraisingStatus.toString()).to.equal("0");
@@ -87,7 +79,7 @@ contract('FundraisingProject', function (accounts) {
 
   it('should revert if Fundraising Phase not open ', async function () {
     // Test initial state of the contract
-    await this.fundraisingProject.closeFundraisingPhase(project_1);
+    await this.fundraisingProject.closeFundraisingPhase(project_1, { from: owner });
     // FundraisingPhaseOpen
     const  currentFundraisingStatus = await this.projectInfo.getFundraisingStatus(project_1);
     expect(currentFundraisingStatus.toString()).to.equal("1");
@@ -99,9 +91,9 @@ contract('FundraisingProject', function (accounts) {
 
   it('checkFundraisingGoals - fundraise failed' , async function () {
 
-    await this.fundraisingProject.openFundraisingPhase(project_1);
+    await this.fundraisingProject.openFundraisingPhase(project_1, { from: owner });
     const total_raised = await this.projectInfo.getTotalRaised(project_1);
-    console.log( " total_raised = ", total_raised.toString());
+    //console.log( " total_raised = ", total_raised.toString());
     
     // contribution investor1
     const amount_1 = web3.utils.toWei("1500", "ether");
@@ -111,7 +103,7 @@ contract('FundraisingProject', function (accounts) {
 
     // total raised :
     const total_raised_2 = await this.projectInfo.getTotalRaised(project_1);
-    console.log( " total_raised 2 = ", total_raised_2.toString());
+    //console.log( " total_raised 2 = ", total_raised_2.toString());
 
     // contribution investor2
     const amount_2 = web3.utils.toWei("1000", "ether");
@@ -121,14 +113,14 @@ contract('FundraisingProject', function (accounts) {
 
     // total raised :
     const total_raised_3 = await this.projectInfo.getTotalRaised(project_1);
-    console.log( " total_raised 3 = ", total_raised_3.toString());
+    //console.log( " total_raised 3 = ", total_raised_3.toString());
     
     // Goal
     const goal = await this.projectInfo.getGoalAmount(project_1);
-    console.log( " goal  = ", goal.toString());
+    //console.log( " goal  = ", goal.toString());
 
     // Close funding phase
-    await this.fundraisingProject.closeFundraisingPhase(project_1);
+    await this.fundraisingProject.closeFundraisingPhase(project_1, { from: owner });
     const  currentFundraisingStatus = await this.projectInfo.getFundraisingStatus(project_1);
     expect(currentFundraisingStatus.toString()).to.equal("1");
 
@@ -160,7 +152,7 @@ contract('FundraisingProject', function (accounts) {
     expectEvent(receipt_3, 'Contribute', { projectId: new BN(1), investor : investor3, amount : amount_3});
     
     // Close funding phase
-    await this.fundraisingProject.closeFundraisingPhase(project_1);
+    await this.fundraisingProject.closeFundraisingPhase(project_1, { from: owner });
     const  currentFundraisingStatus = await this.projectInfo.getFundraisingStatus(project_1);
     expect(currentFundraisingStatus.toString()).to.equal("1");
 
@@ -169,9 +161,9 @@ contract('FundraisingProject', function (accounts) {
     expectEvent(receipt_check, 'FundraisingSuccessful', { projectId: new BN(1)});
   });
 
-  it.only('unlockFunds -  successful' , async function () {
+  it('unlockFunds -  successful' , async function () {
 
-    await this.fundraisingProject.openFundraisingPhase(project_1);
+    await this.fundraisingProject.openFundraisingPhase(project_1, { from: owner });
 
     // contribution investor1
     const amount_1 = web3.utils.toWei("5000", "ether");
@@ -179,7 +171,7 @@ contract('FundraisingProject', function (accounts) {
     const receipt =  await this.fundraisingProject.contribute(project_1, amount_1, { from: investor1 });
     expectEvent(receipt, 'Contribute', { projectId: new BN(1), investor : investor1, amount : amount_1});
     // Close funding phase
-    await this.fundraisingProject.closeFundraisingPhase(project_1);
+    await this.fundraisingProject.closeFundraisingPhase(project_1, { from: owner });
 
     // check balance before
     const balance_1 = await this.mockToken.balanceOf(this.fundraisingProject.address);
@@ -199,9 +191,9 @@ contract('FundraisingProject', function (accounts) {
     assert.equal(balance_2.toString(), expected_balance.toString(), 'Balances should be equal');
   });
 
-  it.only('unlockFunds -  Failed - not enough balance' , async function () {
+  it('unlockFunds -  Failed - not enough balance' , async function () {
 
-    await this.fundraisingProject.openFundraisingPhase(project_1);
+    await this.fundraisingProject.openFundraisingPhase(project_1, { from: owner });
 
     // contribution investor1
     const amount_1 = web3.utils.toWei("5000", "ether");
@@ -209,7 +201,7 @@ contract('FundraisingProject', function (accounts) {
     const receipt =  await this.fundraisingProject.contribute(project_1, amount_1, { from: investor1 });
     expectEvent(receipt, 'Contribute', { projectId: new BN(1), investor : investor1, amount : amount_1});
     // Close funding phase
-    await this.fundraisingProject.closeFundraisingPhase(project_1);
+    await this.fundraisingProject.closeFundraisingPhase(project_1, { from: owner });
 
     // check balance before
     const balance_1 = await this.mockToken.balanceOf(this.fundraisingProject.address);
@@ -223,67 +215,34 @@ contract('FundraisingProject', function (accounts) {
     assert.equal(balance_1.toString(), balance_2.toString(), 'Balance should be not changed');
   });
 
-  // describe('Deployment and initialization', function () {
-  //   beforeEach(async function () {
-  //     //const [owner, projectOwner, voter1, voter2, voter3, nonVoter] = accounts;
-  //     beforeEach(async function () {
-  //       this.seedToken = await SeedToken.new({ from: owner });
-  //       this.projectInfo = await ProjectInfo.new({ from: owner });
-        
-  //       this.mockToken = await MockToken.new({ from: owner });
-  //       this.fundraisingProject = await FundraisingProject.new(this.mockToken.address, this.projectInfo.address, { from: owner });
-  
-  //       // Add a project
-  //       await this.projectInfo.addProject(projectOwner, "Project Title", 1000, 3, 100000, 100, { from: owner });
-      
-  //     });
-  //   });
+  it('withdrawInvestor -  successful case' , async function () {
 
-  //   it('should deploy the contract with correct initial state', async function () {
-  //     // Test initial state of the contract
-  //     //await this.fundraisingProject.
-  //     const  currentFundraisingStatus = await this.projectInfo.getFundraisingStatus(project_1);
-  //     expect(currentFundraisingStatus == ProjectInfo.FundraisingStatus.FundraisingPhaseOpen, "Fundraising phase not open !");
-  //   });
-  // });
+    await this.fundraisingProject.openFundraisingPhase(project_1, { from: owner });
 
-  // describe('Contribution', function () {
-  //   it('should allow an investor to contribute', async function () {
-  //     // Test contribution
-  //   });
+    // contribution investor1
+    const amount_1 = web3.utils.toWei("5000", "ether");
+    await this.mockToken.approve(this.fundraisingProject.address, web3.utils.toWei(amount_1.toString(), "ether"), { from: investor2 });
+    const receipt =  await this.fundraisingProject.contribute(project_1, amount_1, { from: investor2 });
+    expectEvent(receipt, 'Contribute', { projectId: new BN(1), investor : investor2, amount : amount_1});
+    
+    // Close funding phase
+    // set fundraising deadline :
+    const last = await web3.eth.getBlock('latest').then(block => block.timestamp);
+    await this.projectInfo.setFundraisingDeadline(project_1, new BN(last) - 1);
+    await this.fundraisingProject.closeFundraisingPhase(project_1, { from: owner });
 
-  //   it('should reject a contribution below the minimum', async function () {
-  //     // Test minimum contribution
-  //   });
+    // check balance before
+    const contrib_1 = await this.projectInfo.getContributions(project_1, investor2);
+    assert.equal(contrib_1.toString(), amount_1, 'Balance should be not changed'); 
 
-  //   it('should reject a contribution after the deadline', async function () {
-  //     // Test contribution after deadline
-  //   });
-  // });
+    // unlock amount 
+    const receipt_w = await this.fundraisingProject.withdrawInvestor(project_1, { from: investor2 });
+    expectEvent(receipt_w, 'Withdraw', 
+      { projectId: new BN(1),
+        _address : investor2,
+        amount: amount_1 });
 
-  // describe('Withdrawal', function () {
-  //   it('should allow an investor to withdraw', async function () {
-  //     // Test withdrawal
-  //   });
-
-  //   it('should reject a withdrawal before the deadline', async function () {
-  //     // Test withdrawal before deadline
-  //   });
-
-  //   it('should reject a withdrawal for a non-contributor', async function () {
-  //     // Test withdrawal for non-contributor
-  //   });
-  // });
-
-  // describe('Unlocking funds', function () {
-  //   it('should allow the owner to unlock funds', async function () {
-  //     // Test unlocking funds
-  //   });
-
-  //   it('should reject unlocking funds by non-owner', async function () {
-  //     // Test non-owner unlocking funds
-  //   });
-  // });
-
-  // Add more test cases as needed
+    const contrib_2 = await this.projectInfo.getContributions(project_1, investor2);
+    assert.equal(contrib_2.toString(),  new BN(0), 'Contrib not withdrawn !');  
+  });
 });

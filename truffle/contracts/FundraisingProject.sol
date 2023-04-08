@@ -75,6 +75,7 @@ contract FundraisingProject is Ownable {
         
         projectInfoContract.incrementContributions(_projectId, msg.sender, _amount);
         projectInfoContract.incrementTotalRaised(_projectId, _amount);
+        // projectInfoContract.incrementNumInvestors(_projectId);
         emit Contribute(_projectId, msg.sender, _amount);
     }
 
@@ -95,6 +96,7 @@ contract FundraisingProject is Ownable {
 
     function withdrawInvestor(uint _projectId) external isValidProjId(_projectId) 
     {
+        require(projectInfoContract.getFundraisingStatus(_projectId) == ProjectInfo.FundraisingStatus.FundraisingPhaseClosed, "Fundraising phase not closed yet !");
         require(block.timestamp > projectInfoContract.getFundraisingDeadline(_projectId), "Funds collecting is not closed yet");
 
         require(projectInfoContract.getContributions(_projectId,msg.sender) >0 , "You have never contributed Or Already Withdrawn");
