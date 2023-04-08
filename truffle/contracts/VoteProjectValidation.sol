@@ -6,7 +6,7 @@ import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "./ProjectInfo.sol";
 
-contract ProjectValidation is Ownable {
+contract VoteProjectValidation is Ownable {
   
     //event ProjectToValidateAdded(uint projectId);
 
@@ -73,7 +73,7 @@ contract ProjectValidation is Ownable {
     function registerEligibleVoters(uint _projectId) public // les voters s'enregistrent d'eux meme .. pas Admin qui ajoute
     {
         require(msg.sender != address(0), "invalid address ! ");
-        require(msg.sender != projectInfoContract.getProjectOwner(_projectId), "project owners are not allowed to vote");
+        require(msg.sender != projectInfoContract.getProjectOwner(_projectId), "ERROR : project owners are not allowed to vote");
 
         uint MinSeedBalance = 1000; // minimum SEED balance required to vote
         require(seedToken.balanceOf(msg.sender) >= MinSeedBalance, "ERROR : Insufficient SEED balance");
@@ -88,7 +88,7 @@ contract ProjectValidation is Ownable {
         _;
     }
 
-    function setVote(uint _projectId, bool _decision) public onlyVoter(_projectId) isValidProjId(_projectId) 
+    function setVote(uint _projectId, bool _decision) public  isValidProjId(_projectId) onlyVoter(_projectId)
     {
         require(projectInfoContract.getVoteValidationStatus(_projectId) == ProjectInfo.VoteValidationStatus.VotingSessionOpen, "Voting Session not open !");
         require(!projectVoters[_projectId][msg.sender].hasVoted , "ERROR : Has Already Voted!");

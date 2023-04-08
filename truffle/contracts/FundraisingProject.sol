@@ -1,4 +1,4 @@
-// SPDX-License-Identifier= MIT
+// SPDX-License-Identifier: MIT
 
 pragma solidity 0.8.19;
 import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
@@ -9,7 +9,7 @@ import "./ProjectInfo.sol";
 contract FundraisingProject is Ownable {
 
     // Events - Begin = 
-    event NewProject(uint projectId);
+    //event NewProject(uint projectId);
     event FundraisingPhaseOpen(uint _projectId);
     event FundraisingPhaseClosed(uint projectId);
     event FundraisingSuccessful(uint projectId);
@@ -18,6 +18,7 @@ contract FundraisingProject is Ownable {
     event WithdrawalPhaseClosed(uint projectId);
     event Contribute(uint projectId, address investor, uint amount);
     event Withdraw(uint projectId, address _address, uint amount);
+    event UnlockFundsSucessful(uint projectId, address _address, uint amount);
     // Events - End 
 
  
@@ -36,6 +37,7 @@ contract FundraisingProject is Ownable {
         _;
     }
     function openFundraisingPhase(uint _projectId) external onlyOwner isValidProjId(_projectId) {
+        require(projectInfoContract.getVoteValidationStatus(_projectId) == ProjectInfo.VoteValidationStatus.ProjectAccepted, "ERROR : Project Not Validated for Funraise!");
         require(projectInfoContract.getFundraisingStatus(_projectId) == ProjectInfo.FundraisingStatus.FundraisingPhaseOpen, "Fundraising phase not open !");
         emit FundraisingPhaseOpen(_projectId);
     }
@@ -61,7 +63,8 @@ contract FundraisingProject is Ownable {
     }
 
     function contribute(uint _projectId, uint _amount) external isValidProjId(_projectId) {
-        require(block.timestamp <= projectInfoContract.getFundraisingDeadline(_projectId), "Fund Collecting is finished !");
+        require(projectInfoContract.getFundraisingStatus(_projectId) == ProjectInfo.FundraisingStatus.FundraisingPhaseOpen, "Fundraising phase not open !"); 
+        require(block.timestamp <= projectInfoContract.getFundraisingDeadline(_projectId), "Fundraise Deadline is finished !");
         require(_amount >= projectInfoContract.getMinContributionPerInvestor(_projectId), string("Minimum amount not respected"));
         
         uint allowance = usdtToken.allowance(msg.sender, address(this)); 
@@ -78,7 +81,7 @@ contract FundraisingProject is Ownable {
     function checkFundraisingGoals(uint _projectId) external onlyOwner isValidProjId(_projectId) 
     {
         require(projectInfoContract.getFundraisingStatus(_projectId) == ProjectInfo.FundraisingStatus.FundraisingPhaseClosed, "Fundraising phase not closed yet !");
-        if(projectInfoContract.getGoalAmount(_projectId) >= projectInfoContract.getTotalRaised(_projectId))
+        if(projectInfoContract.getTotalRaised(_projectId) >= projectInfoContract.getGoalAmount(_projectId))
         {
             projectInfoContract.setFundraisingStatus(_projectId, ProjectInfo.FundraisingStatus.FundraisingSuccessful);
             projectInfoContract.calculatePercentageContribs(_projectId);
@@ -109,10 +112,16 @@ contract FundraisingProject is Ownable {
 
     function unlockFunds(uint _projectId, uint256 _amoutToUnlock) external onlyOwner isValidProjId(_projectId)  returns(bool)
     {
-        bool isSuccess = usdtToken.transfer(projectInfoContract.getProjectOwner(_projectId), _amoutToUnlock);
-        //require(success, "transfer to projectOwner Failed");
-        return isSuccess;
+        // check balance vs amount
+        uint256 contractBalance = usdtToken.balanceOf(address(this));
+        require(contractBalance >= _amoutToUnlock, "Not enough balance in the smart contract");
+ 
+        address projectOwner = projectInfoContract.getProjectOwner(_projectId);
+        bool success = usdtToken.transfer(projectOwner, _amoutToUnlock);
+        require(success, "transfer to projectOwner Failed");
 
+        emit UnlockFundsSucessful( _projectId,  projectOwner,  _amoutToUnlock);
+        return success;
     }
 }
 

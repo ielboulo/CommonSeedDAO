@@ -1,4 +1,4 @@
-// SPDX-License-Identifier= MIT
+// SPDX-License-Identifier: MIT
 
 pragma solidity 0.8.19;
 import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
@@ -6,11 +6,11 @@ import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "../node_modules/@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-import "./FundraisingProjects.sol";
+import "./FundraisingProject.sol";
 import "./ProjectInfo.sol";
 
 
-contract VoteFundsEscrow  is Ownable {
+contract VoteUnlockFunds  is Ownable {
 
     FundraisingProject public fundraisingProjects;
     ProjectInfo projectInfoContract;
