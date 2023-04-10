@@ -21,12 +21,13 @@ const Header = () => {
         }
       }, [accounts]);
     
-      useEffect(() => {
-        if (window.ethereum && window.ethereum.isConnected()) {
-          tryInit();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, []);
+    // TODO Ilham 
+    //   useEffect(() => {
+    //     if (window.ethereum && window.ethereum.isConnected()) {
+    //       tryInit();
+    //     }
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    //   }, []);
     
 
     return (
@@ -41,7 +42,7 @@ const Header = () => {
             <Box ml="auto">
 
             {address ? 
-            <Typography>{address}</Typography> 
+            <Typography variant="h4">{address}</Typography> 
             : window.ethereum && 
 
             <Button onClick={tryInit}

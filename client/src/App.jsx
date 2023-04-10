@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { AppBar, Box, Toolbar, Typography, Grid } from "@mui/material";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import HomePage from "./pages/HomePage";
 import ProjectInfoPage from './pages/ProjectInfoPage';
@@ -15,10 +16,27 @@ import Header from "./components/Header";
 import { EthProvider } from './contexts/EthContext';
 import { AppProvider } from './contexts/AppContext';
 
+let theme = createTheme({
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          background: '#d3b638'
+        }
+      }
+    }
+  },
+  palette: {
+    primary: {
+      main: '#012b29'
+    }
+  }
+});
 
 function App() {
   return (
     <EthProvider>
+      <ThemeProvider theme={theme}>
       <AppProvider>
         <Router>
           <Box>
@@ -50,6 +68,7 @@ function App() {
           </Box>
         </Router>
       </AppProvider>
+      </ThemeProvider>
     </EthProvider>
 
   );

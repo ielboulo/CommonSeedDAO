@@ -8,9 +8,9 @@ function EthProvider({ children }) {
 
   const init = useCallback(async (artifacts) => {
 
-    console.log("go call init() ==> init = useCallback ");
-    console.log("artifacts ", artifacts);
-    console.log("artifacts.length ", artifacts.length);
+    //console.log("go call init() ==> init = useCallback ");
+    //console.log("artifacts ", artifacts);
+    //console.log("artifacts.length ", artifacts.length);
 
     if (artifacts && artifacts.length > 0) {
       const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
@@ -18,6 +18,7 @@ function EthProvider({ children }) {
       const networkID = await web3.eth.net.getId();
       const currentBlock = await web3.eth.getBlockNumber();
   
+      // IEL
       const contractsData = await Promise.all(
         artifacts.map(async (artifact) => {
           const deployTransaction = await web3.eth.getTransaction(
@@ -56,36 +57,36 @@ function EthProvider({ children }) {
     }
   }, []);
   
-
   useEffect(() => {
-    console.log("useEffect - before tryInit - begin ");
 
-    const tryInit = async () => {
-
-      console.log("tryInit - begin ");
-      try {
-        const artifacts = [require("../../contracts/ProjectInfo.json"),
-                          require("../../contracts/VoteProjectValidation.json"), 
-                          require("../../contracts/FundraisingProject.json"), 
-                          require("../../contracts/VoteUnlockFunds.json"),
-                          require("../../contracts/SeedToken.json")];
-        console.log("artifact with 5 smart contracts = ", artifacts.length);
-        
-        console.log("go call init()");
-
-        init(artifacts);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    //tryInit();
-    if (typeof tryInit === 'function') {
-      tryInit();
-    } else {
-      console.error('tryInit is not a function');
+  const tryInit = async () => {
+    try {
+      const artifacts = [
+        require("../../contracts/ProjectInfo.json"),
+        require("../../contracts/VoteProjectValidation.json"),
+        require("../../contracts/FundraisingProject.json"),
+        require("../../contracts/VoteUnlockFunds.json"),
+        require("../../contracts/SeedToken.json"),
+      ];
+      init(artifacts);
+    } 
+    catch (err) {
+      console.error(err);
     }
-  }, [init]);
+  }; 
+     tryInit();
+}, [init]);
+
+
+  // useEffect(() => {
+  //   //console.log("useEffect - before tryInit - begin ");
+  //   if (typeof tryInit === "function") {
+  //     tryInit();
+  //   } else {
+  //     console.error("tryInit is not a function");
+  //   }
+  // }, [init, tryInit]);
+
 
   useEffect(() => {
     const events = ["chainChanged", "accountsChanged"];
