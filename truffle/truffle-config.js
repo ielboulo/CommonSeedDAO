@@ -1,3 +1,4 @@
+
 /**
  * Use this file to configure your truffle project. It's seeded with some
  * common settings for different networks and features like migrations,
@@ -12,16 +13,16 @@
  * --------------------------------
  *
  * Do you have a complex application that requires lots of transactions to deploy?
- * Use this approach to make deployment a breeze 🏖️:
+ * Use this approach to make deployment a breeze :
  *
  * Infura deployment needs a wallet provider (like @truffle/hdwallet-provider)
  * to sign transactions before they're sent to a remote public node.
  * Infura accounts are available for free at 🔍: https://infura.io/register
  *
  * You'll need a mnemonic - the twelve word phrase the wallet uses to generate
- * public/private key pairs. You can store your secrets 🤐 in a .env file.
+ * public/private key pairs. You can store your secrets in a .env file.
  * In your project root, run `$ npm install dotenv`.
- * Create .env (which should be .gitignored) and declare your MNEMONIC
+ * Create .env (which should be .gitignored) and declare yo:ur MNEMONIC
  * and Infura PROJECT_ID variables inside.
  * For example, your .env file will have the following structure:
  *
@@ -31,7 +32,7 @@
  * Deployment with Truffle Dashboard (Recommended for best security practice)
  * --------------------------------------------------------------------------
  *
- * Are you concerned about security and minimizing rekt status 🤔?
+ * Are you concerned about security and minimizing rekt status ?
  * Use this method for best security:
  *
  * Truffle Dashboard lets you review transactions in detail, and leverages
@@ -44,7 +45,7 @@
 // require('dotenv').config();
 // const { MNEMONIC, PROJECT_ID } = process.env;
 
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
+const HDWalletProvider = require('@truffle/hdwallet-provider');
 
 module.exports = {
   /**
@@ -70,40 +71,32 @@ module.exports = {
      port: 8545,            // Standard Ethereum port (default: none)
      network_id: "*",       // Any network (default: none)
     },
+    // Réseaux de test unitaires pour pouvoir utiliser un Mock. (MockToken.sol)
     test: {
       host: "127.0.0.1",
       port: 7545,
       network_id: "*",
-      // Run the specific migration file for tests
-     // migrations_directory: "./migrations_test"
     },
-    //
-    // An additional network, but with some advanced options…
-    // advanced: {
-    //   port: 8777,             // Custom port
-    //   network_id: 1342,       // Custom network
-    //   gas: 8500000,           // Gas sent with each transaction (default: ~6700000)
-    //   gasPrice: 20000000000,  // 20 gwei (in wei) (default: 100 gwei)
-    //   from: <address>,        // Account to send transactions from (default: accounts[0])
-    //   websocket: true         // Enable EventEmitter interface for web3 (default: false)
-    // },
-    //
-    // Useful for deploying to a public network.
-    // Note: It's important to wrap the provider as a function to ensure truffle uses a new provider every time.
-    // goerli: {
-    //   provider: () => new HDWalletProvider(MNEMONIC, `https://goerli.infura.io/v3/${PROJECT_ID}`),
-    //   network_id: 5,       // Goerli's id
-    //   confirmations: 2,    // # of confirmations to wait between deployments. (default: 0)
-    //   timeoutBlocks: 200,  // # of blocks before a deployment times out  (minimum/default: 50)
-    //   skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
-    // },
-    //
-    // Useful for private networks
-    // private: {
-    //   provider: () => new HDWalletProvider(MNEMONIC, `https://network.io`),
-    //   network_id: 2111,   // This network is yours, in the cloud.
-    //   production: true    // Treats this network as if it was a public net. (default: false)
-    // }
+
+    // Goerli 
+    goerli: {
+      provider: () => new HDWalletProvider(`${process.env.MNEMONIC}`, `https://goerli.infura.io/v3/${process.env.INFURA_ID}`),
+      network_id: 5,       // Goerli's id
+      confirmations: 2,    // # of confirmations to wait between deployments. (default: 0)
+      timeoutBlocks: 200,  // # of blocks before a deployment times out  (minimum/default: 50)
+      skipDryRun: false,     // Skip dry run before migrations? (default: false for public nets )
+    
+      networkCheckTimeoutnetworkCheckTimeout: 10000,
+      gas: 3000000
+    },
+
+    // Mumbai 
+    mumbai: {
+      provider: function() {
+        return new HDWalletProvider(`${process.env.MNEMONIC}`, `https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_ID}`)
+      },
+      network_id: 80001
+    },
   },
 
   // Set default mocha options here, use special reporters, etc.

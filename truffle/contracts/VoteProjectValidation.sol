@@ -14,11 +14,11 @@ contract VoteProjectValidation is Ownable {
     event RegisterVotersClose(uint _projectId);
     event VotingSessionOpen(uint _projectId);
     event VotingSessionClose(uint _projectId);
-    //event VotingSessionResults(uint _projectId);
     event ProjectAccepted(uint _projectId);
     event ProjectRejected(uint _projectId);
     
     event RegisterEligibleVoterDone(uint _projectId, address _addr);
+    
     event Voted(uint _projectId, address _addr);
  
     struct CountVotes {

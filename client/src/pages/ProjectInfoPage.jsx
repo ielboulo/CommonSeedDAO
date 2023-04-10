@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Button, TextField, Grid, Box, Card, CardContent, Typography } from '@mui/material';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import useEth from "../contexts/EthContext/useEth";
 
@@ -73,7 +75,13 @@ function ProjectForm() {
         const deadlineTimestamp = Date.parse(formData.fundraisingDeadline) / 1000;
         await contractsData[0].contract.methods.addProject(formData.projectOwner, formData.projectTitle, formData.goalAmount,
           formData.totalPhases, deadlineTimestamp, formData.minContribution).send({from : accounts[0]});
-      }
+        toast.success("SUCCESS : Project Added Sucessfully !", {
+          closeButton: true,
+          autoClose: true,
+          position: 'top-center',
+        });
+
+	 }
       else {
         alert("WARNING : All Mandatory fields should be filled ! "); 
       }
@@ -105,9 +113,52 @@ function ProjectForm() {
 
    return (
     <>
-    { isOwner  && (
-    <div className="App"> 
     <Typography gutterBottom variant="h3" align="center">
+      Projects Dashboard 
+     </Typography>
+    <TableContainer component={Paper}>
+      <Table sx={{ minWidth: 650, maxWidth: 1550, padding: "20px 5px", margin: "0 auto",
+            fontSize: "1.2rem", 
+            fontFamily: "Arial,sans-serif" 
+          }} aria-label="projects table">
+        <TableHead>
+          <TableRow sx={{fontSize: "12px", fontWeight: "bold", background: '#d3b638' }}> 
+            <TableCell sx={{fontSize: "12px", fontWeight: "bold", background: '#d3b638' }} >Project ID</TableCell>
+            <TableCell sx={{fontSize: "12px", fontWeight: "bold", background: '#d3b638' }}>Project Owner</TableCell>
+            <TableCell sx={{fontSize: "12px", fontWeight: "bold", background: '#d3b638' }}>Project Title</TableCell>
+            <TableCell sx={{fontSize: "12px", fontWeight: "bold", background: '#d3b638' }}>Goal Amount</TableCell>
+            <TableCell sx={{fontSize: "12px", fontWeight: "bold", background: '#d3b638' }}>Vote Validation Status</TableCell>
+            <TableCell sx={{fontSize: "12px", fontWeight: "bold", background: '#d3b638' }}>Fundraising Status</TableCell>
+            <TableCell sx={{fontSize: "12px", fontWeight: "bold", background: '#d3b638' }}>Total Raised</TableCell>
+            <TableCell sx={{fontSize: "12px", fontWeight: "bold", background: '#d3b638' }}>Total Unlocked</TableCell>
+            <TableCell sx={{fontSize: "12px", fontWeight: "bold", background: '#d3b638' }}>Remaining Funds</TableCell>
+            <TableCell sx={{fontSize: "12px", fontWeight: "bold", background: '#d3b638' }}>Number of Investors</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {projects.map((project, index) => (
+            <TableRow key={index}>
+              <TableCell>{index + 1}</TableCell>
+              <TableCell>{project.projectOwner}</TableCell>
+              <TableCell>{project.projectTitle}</TableCell>
+              <TableCell>{project.goalAmount}</TableCell>
+              <TableCell>{VoteValidationStatus[project.voteValidationStatus]}</TableCell>
+              <TableCell>{FundraisingStatus[project.fundraisingStatus]}</TableCell>
+              <TableCell>{project.totalRaised}</TableCell>
+              <TableCell>{project.totalUnlocked}</TableCell>
+              <TableCell>{project.remainingFunds}</TableCell>
+              <TableCell>{project.numberOfInvestors}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+
+    <hr/>
+    { isOwner  && (
+    <div className="App">
+    <ToastContainer /> 
+    <Typography gutterBottom variant="h3" align="center" sx={{ background: '#d3b638' }}>
       Add Project Details - Admin
      </Typography>
     <Grid>
@@ -192,47 +243,6 @@ function ProjectForm() {
     </div>
     )}
 
-
-    <Typography gutterBottom variant="h3" align="center">
-      Projects Dashboard 
-     </Typography>
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650, maxWidth: 1550, padding: "20px 5px", margin: "0 auto",
-            fontSize: "1.2rem", 
-            fontFamily: "Arial,sans-serif" 
-          }} aria-label="projects table">
-        <TableHead>
-          <TableRow sx={{fontSize: "12px", fontWeight: "bold", background: '#d3b638' }}> 
-            <TableCell sx={{fontSize: "12px", fontWeight: "bold", background: '#d3b638' }} >Project ID</TableCell>
-            <TableCell sx={{fontSize: "12px", fontWeight: "bold", background: '#d3b638' }}>Project Owner</TableCell>
-            <TableCell sx={{fontSize: "12px", fontWeight: "bold", background: '#d3b638' }}>Project Title</TableCell>
-            <TableCell sx={{fontSize: "12px", fontWeight: "bold", background: '#d3b638' }}>Goal Amount</TableCell>
-            <TableCell sx={{fontSize: "12px", fontWeight: "bold", background: '#d3b638' }}>Vote Validation Status</TableCell>
-            <TableCell sx={{fontSize: "12px", fontWeight: "bold", background: '#d3b638' }}>Fundraising Status</TableCell>
-            <TableCell sx={{fontSize: "12px", fontWeight: "bold", background: '#d3b638' }}>Total Raised</TableCell>
-            <TableCell sx={{fontSize: "12px", fontWeight: "bold", background: '#d3b638' }}>Total Unlocked</TableCell>
-            <TableCell sx={{fontSize: "12px", fontWeight: "bold", background: '#d3b638' }}>Remaining Funds</TableCell>
-            <TableCell sx={{fontSize: "12px", fontWeight: "bold", background: '#d3b638' }}>Number of Investors</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {projects.map((project, index) => (
-            <TableRow key={index}>
-              <TableCell>{index + 1}</TableCell>
-              <TableCell>{project.projectOwner}</TableCell>
-              <TableCell>{project.projectTitle}</TableCell>
-              <TableCell>{project.goalAmount}</TableCell>
-              <TableCell>{VoteValidationStatus[project.voteValidationStatus]}</TableCell>
-              <TableCell>{FundraisingStatus[project.fundraisingStatus]}</TableCell>
-              <TableCell>{project.totalRaised}</TableCell>
-              <TableCell>{project.totalUnlocked}</TableCell>
-              <TableCell>{project.remainingFunds}</TableCell>
-              <TableCell>{project.numberOfInvestors}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
     </>
     
 

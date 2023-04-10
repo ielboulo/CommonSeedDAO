@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 import "../node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 
-contract SeedToken is ERC20 {
+contract SeedToken is ERC20, Ownable {
 
     uint256 constant MIN_GOVERNANCE_TOKENS = 1000;
     uint256 public holdersCount;
-    mapping(address => bool) private _holders; // TODO : if not needed, to remove
+    mapping(address => bool) private _holders;
 
 
     constructor() ERC20("SEED", "SDC") {
@@ -18,7 +19,7 @@ contract SeedToken is ERC20 {
         require(amount > 0, "SEED Token: amount must be > 0 !");
         super._beforeTokenTransfer(from, to, amount);
 
-        if (!_holders[from] && balanceOf(from) >= MIN_GOVERNANCE_TOKENS) 
+        if (!_holders[from] && balanceOf(from) >= MIN_GOVERNANCE_TOKENS)  // TODO : remove restriction 
         {
             _holders[from] = true;
             holdersCount++;
