@@ -68,6 +68,22 @@ const MenuBar = () => {
             },
             ml: 2,
           }}
+           component={Link} to="/collect-funds">
+          Collect Funds
+        </Button>
+
+        <Button  sx={{
+            backgroundColor: "#d3b638", // jaune doré 
+            color: "#fff",
+            fontWeight: "bold",
+            fontSize: "14px",
+            height: "40px",
+            width: "260px",
+            "&:hover": {
+              backgroundColor: "#a6a6a6", // gris clair 
+            },
+            ml: 2,
+          }}
            component={Link} to="/vote-unlock-funds">
           Vote Unlock Funds
         </Button>
