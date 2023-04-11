@@ -3,10 +3,10 @@
 /// @author Ilham EL BOULOUMI
 /// @dev    Déploiment de 5 smart contracts :
 /// 		1- SeedToken : Smart Contract qui mint les tokens de gouvernance de la DAO.
-///			2- ProjectInfo : Smart contract de type "eternal storage" qui stocke les infos des projets de crowdfunding. Smart contract partagé par tous les smart contracts suivants
-///         3- VoteProjectValidation : Smart contract de la gestion de vote par la communauté DAO sur la validité d'un projet
-///			4- FundraisingProject : smart contract de collecte de fonds en stable coin (usdt /dai/ ..etc)
-///			5- VoteUnlockFunds : smart contract qui gère le vote et le déblocage de fonds par phase.
+///		2- ProjectInfo : Smart contract de type "eternal storage" qui stocke les infos des projets de crowdfunding. Smart contract partagé par tous les smart contracts suivants
+///             3- VoteProjectValidation : Smart contract de la gestion de vote par la communauté DAO sur la validité d'un projet
+///		4- FundraisingProject : smart contract de collecte de fonds en stable coin (usdt /dai/ ..etc)
+///		5- VoteUnlockFunds : smart contract qui gère le vote et le déblocage de fonds par phase.
 
 const SeedToken = artifacts.require("SeedToken");
 const ProjectInfo = artifacts.require("ProjectInfo");
