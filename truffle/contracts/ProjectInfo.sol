@@ -1,5 +1,10 @@
 // SPDX-License-Identifier: MIT
 
+/// @title  ProjectInfo
+/// @author Ilham EL BOULOUMI
+/// @dev   ProjectInfo : Smart contract de type "eternal storage" qui stocke les infos des projets de crowdfunding.
+///        Smart contract partagé par tous les smart contracts de vote et de gestion de fonds
+
 pragma solidity 0.8.19;
 import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
@@ -83,21 +88,11 @@ contract ProjectInfo  is Ownable {
         require(_projectId <= numProjects, "Invalid ProjectID");
         _;
     }
-    // function setProjectOwner(address _projectOwner) public onlyOwner { // TODO : if not needed , to remove 
-    //     require(_projectOwner != address(0), "Invalid address");
-    //     projectOwnersMap[_projectOwner] = true;
-    // }
+
     function getProjectOwner(uint _projectId) external view isValidProjId(_projectId) returns(address){
         return projectsGI[_projectId].projectOwner;
     }
 ///// Add Project 
-
-    // remove if not needed TODO 
-    // modifier onlyAdminOrProjectOwner() {
-    //     require(msg.sender == owner() , "Unauthorized access"); // || projectOwnersMap[msg.sender]
-    //     _;
-    // }
-
     function addProject(address _projectOwner, string memory _projectTitle, uint _goalAmount, 
                      uint _totalPhases, uint256 _fundraisingDeadline, uint _minContribution) external onlyOwner 
    
@@ -109,15 +104,8 @@ contract ProjectInfo  is Ownable {
         newProject.projectTitle     = _projectTitle;
         newProject.goalAmount       = _goalAmount;
         newProject.totalPhases      = _totalPhases;
-        newProject.fundraisingDeadline        = _fundraisingDeadline; // Stack too deep
-        newProject.minContributionPerInvestor = _minContribution; // Stack too deep
-        //newProject.maxContributionPerInvestor = _maxContribution; // Stack too deep
-        //newProject.projectDeadline            = _projectDeadline; // Stack too deep
-        //newProject.startDate                  = _startDate; // Stack too deep
-        //newProject.endDate                    = _endDate; // Stack too deep
-        //newProject.whitepaperLink             = _whitepaperLink; // Stack too deep
-
-        //[_projectTitle]       = numProjects;
+        newProject.fundraisingDeadline        = _fundraisingDeadline; 
+        newProject.minContributionPerInvestor = _minContribution; 
     }
 
 //////// GETTERS & SETTERS 
@@ -131,10 +119,6 @@ contract ProjectInfo  is Ownable {
         return 0; // if index = 0 ==> project not found 
     }
 
-    // function getProjectIdByTitle(string memory _projectTitle) public view returns (uint) {
-    //     return projectTitleToID[_projectTitle];
-    // }
-
     function getLastProjectId() external view returns(uint)
     {
         return numProjects; 
@@ -147,9 +131,6 @@ contract ProjectInfo  is Ownable {
     }
     function getProjectPhaseInfo(uint _projectId, uint _phaseId) external view returns(PhaseInfo memory) {
         return projectsPI[_projectId].phasesInfo[_phaseId];
-        //            mapping(uint => PhaseInfo) phasesInfo;  
-            // phasesInfo[phaseId]. isUnlockSubmittedToVote / isUnlockAccepted / isUnlockExecuted / amountToUnlock
-    
     }
     function getUnlockSubmittedToVote(uint _projectId, uint _phaseId) external view returns(bool) {
         return projectsPI[_projectId].phasesInfo[_phaseId].isUnlockSubmittedToVote;
@@ -178,16 +159,11 @@ contract ProjectInfo  is Ownable {
     function getProjectTotalPhases(uint _projectId) external view returns(uint) {
         return projectsGI[_projectId].totalPhases;
     }
-    // function getProjectIndexByOwner(address _projectOwner) public view returns (uint) {
-    //     return projectOwnerToIndex[_projectOwner];
-    // }
 
     function getNumProjects() public view returns(uint)
     {
         return numProjects;
     }
-
-
 
     function getVoteValidationStatus(uint _projectId) public view isValidProjId(_projectId) returns (VoteValidationStatus) {
         return projectsPI[_projectId].voteValidationStatus;
@@ -200,6 +176,7 @@ contract ProjectInfo  is Ownable {
     function getVoteUnlockStatus(uint _projectId, uint _phase) public view isValidProjId(_projectId) returns (VoteUnlockStatus) {
         return projectsPI[_projectId].phasesInfo[_phase].voteUnlockStatus; 
     }
+
     function setVoteUnlockStatus(uint _projectId, uint _phase, VoteUnlockStatus _newStatus) public isValidProjId(_projectId){
         projectsPI[_projectId].phasesInfo[_phase].voteUnlockStatus = _newStatus; 
     }   
@@ -281,7 +258,6 @@ contract ProjectInfo  is Ownable {
         projectsPI[_projectId].fundraisingStatus = _newStatus;
     }
 
-   // Stack too deep
     function getFundraisingDeadline(uint _projectId)  external view returns (uint256) {
         return projectsGI[_projectId].fundraisingDeadline;
     }
@@ -289,7 +265,6 @@ contract ProjectInfo  is Ownable {
         projectsGI[_projectId].fundraisingDeadline = deadline;
    }
 
-   // Stack too deep
    function getMinContributionPerInvestor(uint _projectId) external view returns (uint256) {
        return projectsGI[_projectId].minContributionPerInvestor; 
    }
@@ -309,11 +284,9 @@ contract ProjectInfo  is Ownable {
         projectsPI[_projectId].totalUnlocked += _amount;     
     }
 
-    function IncrementNumProjects() external { // TODO to remove if not used 
+    function IncrementNumProjects() external { 
                 numProjects += 1;
     }
- 
-
 //////////////
 
  }

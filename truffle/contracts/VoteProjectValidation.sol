@@ -1,5 +1,9 @@
 // SPDX-License-Identifier: MIT
 
+/// @title  VoteProjectValidation
+/// @author Ilham EL BOULOUMI
+/// @dev   	VoteProjectValidation : Smart contract de la gestion de vote par la communauté DAO sur la validité d'un projet
+
 pragma solidity 0.8.19;
 import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -8,8 +12,6 @@ import "./ProjectInfo.sol";
 
 contract VoteProjectValidation is Ownable {
   
-    //event ProjectToValidateAdded(uint projectId);
-
     event RegisterVotersOpen(uint _projectId);
     event RegisterVotersClose(uint _projectId);
     event VotingSessionOpen(uint _projectId);

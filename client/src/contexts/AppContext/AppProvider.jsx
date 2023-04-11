@@ -41,7 +41,6 @@ function AppProvider({ children }) {
     const tryGetOwner = async () => {
       try {
         let owner = await contractsData[0].contract.methods.owner().call({ from: accounts[0] });
-        //console.log("tryGetOwner = ", owner);
         updateOwner(owner);
       } catch (error) {
         dispatch({
@@ -54,7 +53,6 @@ function AppProvider({ children }) {
       }
     };
     if (contractsData && contractsData[0].contract && accounts) {
-      //console.log("call tryGetOwner() ");
       tryGetOwner();
     }
   }, [contractsData && contractsData[0].contract, accounts, updateOwner]);

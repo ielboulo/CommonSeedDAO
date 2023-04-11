@@ -1,5 +1,9 @@
 // SPDX-License-Identifier: MIT
 
+/// @title  VoteUnlockFunds
+/// @author Ilham EL BOULOUMI
+/// @dev    VoteUnlockFunds : smart contract qui gère le vote et le déblocage de fonds par phase.
+
 pragma solidity 0.8.19;
 import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";

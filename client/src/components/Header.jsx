@@ -21,15 +21,6 @@ const Header = () => {
         }
       }, [accounts]);
     
-    // TODO Ilham 
-    //   useEffect(() => {
-    //     if (window.ethereum && window.ethereum.isConnected()) {
-    //       tryInit();
-    //     }
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    //   }, []);
-    
-
     return (
         <Box> 
         <AppBar position="static">
@@ -66,8 +57,5 @@ const Header = () => {
         </Box>
     );
 };
-
 export default Header;
 
-// {address ? <Typography>{address}</Typography> :
-// 

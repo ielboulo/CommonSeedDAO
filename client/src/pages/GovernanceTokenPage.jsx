@@ -13,7 +13,6 @@ function GovernanceTokenPage() {
   const [isOwner, setIsOwner] = useState(false);
   const [refreshData, setRefreshData] = useState(false);
 
-  //const { activate, active, account, library, chainId } = useWeb3React();
   const [maxSupply, setMaxSupply] = useState("");
   const [holdersCount, setHoldersCount] = useState("");
   const [transferToAddress, setTransferToAddress] = useState("");

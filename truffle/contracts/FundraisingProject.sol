@@ -1,5 +1,10 @@
 // SPDX-License-Identifier: MIT
 
+
+/// @title  FundraisingProject
+/// @author Ilham EL BOULOUMI
+/// @dev   FundraisingProject : Smart contract la collecte des fonds
+
 pragma solidity 0.8.19;
 import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -9,7 +14,6 @@ import "./ProjectInfo.sol";
 contract FundraisingProject is Ownable {
 
     // Events - Begin = 
-    //event NewProject(uint projectId);
     event FundraisingPhaseOpen(uint _projectId);
     event FundraisingPhaseClosed(uint projectId);
     event FundraisingSuccessful(uint projectId);
@@ -126,54 +130,3 @@ contract FundraisingProject is Ownable {
         return success;
     }
 }
-
-
-
-            // IERC20 usdt = IERC20(usdtContractAddress);
-            // usdt.transfer(projectOwner, fundsToRelease);
-// _tokenAddress of USDT  0xA02f6adc7926efeBBd59Fd43A84f4E0c0c91e832  (Polygon Blockchain - Mumbai Netowrk)
-// source : https://mumbai.polygonscan.com/token/0xa02f6adc7926efebbd59fd43a84f4e0c0c91e832?a=0xe84d601e5d945031129a83e5602be0cc7f182cf3
-
-
-
-    // // TODO retravailler code 
-    // function unlockFunds(uint _projectId) external onlyOwner isValidProjId(_projectId)  
-    // {
-    //     // require vote validated release funds : will be done by caller : VoteUnlockFunds.sol
-    //     uint currentPhase = projectInfoContract.getProjectCurrentPhase(_projectId); 
-    //     require( currentPhase < projectInfoContract.getProjectTotalPhases(_projectId),
-    //              "All phases have already been released");
-
-    //     // Check if previous phase has been released
-    //     if (currentPhase > 0) {
-    //         require(projectInfoContract.getProjectPhaseInfo(_projectId, currentPhase - 1).isUnlockExecuted, 
-    //                 "Previous phase has not been released ! ");
-    //     }
-
-    //     // Calculate funds to release
-    //     if( projectInfoContract.getPhaseUnlockAccepted(_projectId, currentPhase))
-    //     {
-    //         uint fundsToRelease = projectInfoContract.getProjectPhaseInfo(_projectId, currentPhase).amountToUnlock;
-    //         projectInfoContract.setPhaseUnlockExecuted(_projectId, currentPhase, true);
-    //         projectInfoContract.incrementTotalUnlocked(_projectId, fundsToRelease);
-    //         projectInfoContract.decrementRemainingFunds(_projectId, fundsToRelease);
-
-    //         projectInfoContract.incrementProjectCurrentPhase(_projectId);
-
-    //         //Transfer USDT to project owner
-    //         usdtToken.transfer(projectInfoContract.getProjectOwner(_projectId), fundsToRelease);
-    //     }
-    // }
-
-
-
-        // TODO : may be not needed - to remove 
-        // Check if enough votes were cast in previous phase
-        // if (currentPhase > 0 && phaseVotes[currentPhase - 1] > 0) {
-        //     Voting votingContract = Voting(); // TODO votingContractAddress
-        //     uint yesVotes = votingContract.getYesVotes(phaseVotes[currentPhase - 1]);
-        //     uint noVotes = votingContract.getNoVotes(phaseVotes[currentPhase - 1]);
-        //     require(yesVotes > noVotes, "Not enough yes votes to release funds");
-        // }
-
-     

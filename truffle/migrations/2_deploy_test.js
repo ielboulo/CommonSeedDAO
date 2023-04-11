@@ -37,19 +37,6 @@ module.exports = async function(deployer, _network, accounts) {
 
 	await deployer.deploy(FundraisingProjects, mockToken.address, projectInfoInstance.address);
 	const fundraisingProjectsInstance = await FundraisingProjects.deployed();
-  
-
-	// Transfer 10.000 mUSDT to the first 6 accounts
-	// const amount = web3.utils.toWei("10000", "ether"); // Convert 10.000 mUSDT to its smallest unit
-	// for (let i = 0; i < 6; i++) {
-	// 	await mockToken.transfer(accounts[i], amount);
-	// }
-
-	// for (let i = 0; i < 6; i++) {
-	// 	console.log("balance investor = accounts[i] ", accounts[i] , " balance = ", mockToken.balanceOf(accounts[i]));
-	// }
-
-	console.log("mUSDT is here ! ");
 
 	// --------------
 	// Vote For Unlock Funds 

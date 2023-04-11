@@ -1,4 +1,9 @@
 // SPDX-License-Identifier: MIT
+
+/// @title  SeedToken
+/// @author Ilham EL BOULOUMI
+/// @dev    SeedToken : Smart Contract qui mint les tokens de gouvernance de la DAO.
+
 pragma solidity 0.8.19;
 import "../node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";

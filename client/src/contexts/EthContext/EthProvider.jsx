@@ -78,16 +78,6 @@ function EthProvider({ children }) {
 }, [init]);
 
 
-  // useEffect(() => {
-  //   //console.log("useEffect - before tryInit - begin ");
-  //   if (typeof tryInit === "function") {
-  //     tryInit();
-  //   } else {
-  //     console.error("tryInit is not a function");
-  //   }
-  // }, [init, tryInit]);
-
-
   useEffect(() => {
     const events = ["chainChanged", "accountsChanged"];
     const handleChange = () => {
