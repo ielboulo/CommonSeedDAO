@@ -72,12 +72,21 @@ contract VoteProjectValidation is Ownable {
         emit VotingSessionClose(_projectId);
     }
 
+    function isEligibleVoter(address _address) external view returns(bool) {
+
+        uint MinSeedBalance = 1000; //TODO minimum SEED balance required to vote
+        return(seedToken.balanceOf(_address) >= MinSeedBalance);
+    }
+    function isRegisteredVoter(uint _projectId, address _address) external view returns(bool) {
+
+        return(projectVoters[_projectId][_address].hasGovernanceToken);
+    }
     function registerEligibleVoters(uint _projectId) public // les voters s'enregistrent d'eux meme .. pas Admin qui ajoute
     {
         require(msg.sender != address(0), "invalid address ! ");
         require(msg.sender != projectInfoContract.getProjectOwner(_projectId), "ERROR : project owners are not allowed to vote");
 
-        uint MinSeedBalance = 1000; // minimum SEED balance required to vote
+        uint MinSeedBalance = 1000; //TODO minimum SEED balance required to vote
         require(seedToken.balanceOf(msg.sender) >= MinSeedBalance, "ERROR : Insufficient SEED balance");
         
         projectVoters[_projectId][msg.sender].hasGovernanceToken = true;

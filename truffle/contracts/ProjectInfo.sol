@@ -94,7 +94,7 @@ contract ProjectInfo  is Ownable {
     }
 ///// Add Project 
     function addProject(address _projectOwner, string memory _projectTitle, uint _goalAmount, 
-                     uint _totalPhases, uint256 _fundraisingDeadline, uint _minContribution) external onlyOwner 
+                     uint _totalPhases, uint256 _fundraisingDeadline, uint _minContribution, string memory _whitepaperLink) external onlyOwner 
    
     {
         numProjects += 1;
@@ -106,6 +106,7 @@ contract ProjectInfo  is Ownable {
         newProject.totalPhases      = _totalPhases;
         newProject.fundraisingDeadline        = _fundraisingDeadline; 
         newProject.minContributionPerInvestor = _minContribution; 
+        newProject.whitepaperLink = _whitepaperLink; 
     }
 
 //////// GETTERS & SETTERS 

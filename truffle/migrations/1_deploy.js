@@ -70,7 +70,8 @@ module.exports = async function(deployer, _network, accounts) {
 	// Deploy FundraisingProjects contract with SeedToken and ProjectInfo addresses as constructor arguments
 	const token_USDT_Goerli_address = "0xC2C527C0CACF457746Bd31B2a698Fe89de2b6d49";
 	const token_DAI_Goerli_address = "0xdc31Ee1784292379Fbb2964b3B9C4124D8F89C60";
-
+	const token_DAI_Mumbai_address = "0xb973D2876c4F161439AD05f1dAe184dbD594e04E";
+	
 	await deployer.deploy(FundraisingProjects, token_DAI_Goerli_address, projectInfoInstance.address);
 	const fundraisingProjectsInstance = await FundraisingProjects.deployed();
 

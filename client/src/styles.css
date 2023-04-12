@@ -151,3 +151,15 @@ hr {
   display: inline-block;
   margin: 2rem 1rem 0 0;
 }
+
+.background-container {
+  background-image: url('./background_Common_Seed.png');
+  background-size: cover;
+  background-position: center;
+}
+
+.table-common {
+  font-size: 14px;
+  font-weight: bold;
+  background: #d3b638;
+}

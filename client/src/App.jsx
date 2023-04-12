@@ -30,7 +30,10 @@ let theme = createTheme({
   palette: {
     primary: {
       main: '#012b29'
-    }
+    },
+    secondary: {
+      main: '#b62c3d'
+    },
   }
 });
 function App() {

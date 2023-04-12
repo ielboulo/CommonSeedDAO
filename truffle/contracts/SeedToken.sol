@@ -16,14 +16,15 @@ contract SeedToken is ERC20, Ownable {
 
 
     constructor() ERC20("SEED", "SDC") {
-        _mint(msg.sender, 1000000000 * 10 ** decimals()); // Mint 1 Billion of Seed tokens | 10^18 
+        _mint(msg.sender, 1000000 * 10 ** decimals()); // Mint 1 Billion of Seed tokens | 10^18 
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual override 
     {
         require(amount > 0, "SEED Token: amount must be > 0 !");
         super._beforeTokenTransfer(from, to, amount);
-
+        
+        // check unity : decimals / unité TODO 
         if (!_holders[from] && balanceOf(from) >= MIN_GOVERNANCE_TOKENS)  // TODO : remove restriction 
         {
             _holders[from] = true;

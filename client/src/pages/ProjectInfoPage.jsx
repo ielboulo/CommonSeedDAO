@@ -12,6 +12,7 @@ function ProjectForm() {
   const { state: {accounts, contractsData, web3}} = useEth();
   const [isOwner, setIsOwner] = useState(false);
   const [projects, setProjects] = useState([]);
+  const [refreshData, setRefreshData] = useState(false);
 
   const [formData, setFormData] = useState({
     projectOwner: '',
@@ -19,14 +20,15 @@ function ProjectForm() {
     goalAmount: '',
     totalPhases: '',
     fundraisingDeadline: '',
-    minContribution: ''
+    minContribution: '',
+    whitepaperLink:''
   });
 
 
   const fetchProjects = async () => {
     const projects = [];
 
-    //if (contractsData && contractsData[0].artifact)
+    if (contractsData && contractsData[0].artifact)
     {
       const numProjects = await contractsData[0].contract.methods.getNumProjects().call();
   
@@ -42,7 +44,7 @@ function ProjectForm() {
 
   useEffect(() => {
     fetchProjects();
-  }); // , []
+  }, [refreshData]); //, [setFormData]  IEL_UseEffect
 
   // IsOwner
   useEffect(() => {
@@ -63,6 +65,10 @@ function ProjectForm() {
       return;
     }
 
+    if (name === "whitepaperLink") {
+      console.log("whitepaperLink = ", value);
+    }
+
     setFormData({ ...formData, [name]: value });
   };
 
@@ -74,12 +80,15 @@ function ProjectForm() {
       {
         const deadlineTimestamp = Date.parse(formData.fundraisingDeadline) / 1000;
         await contractsData[0].contract.methods.addProject(formData.projectOwner, formData.projectTitle, formData.goalAmount,
-          formData.totalPhases, deadlineTimestamp, formData.minContribution).send({from : accounts[0]});
+          formData.totalPhases, deadlineTimestamp, formData.minContribution, formData.whitepaperLink).send({from : accounts[0]});
         toast.success("SUCCESS : Project Added Sucessfully !", {
           closeButton: true,
           autoClose: true,
           position: 'top-center',
         });
+
+        setRefreshData(!refreshData);
+
 
 	 }
       else {
@@ -133,6 +142,7 @@ function ProjectForm() {
             <TableCell sx={{fontSize: "12px", fontWeight: "bold", background: '#d3b638' }}>Total Unlocked</TableCell>
             <TableCell sx={{fontSize: "12px", fontWeight: "bold", background: '#d3b638' }}>Remaining Funds</TableCell>
             <TableCell sx={{fontSize: "12px", fontWeight: "bold", background: '#d3b638' }}>Number of Investors</TableCell>
+            <TableCell sx={{fontSize: "12px", fontWeight: "bold", background: '#d3b638' }}>Whitepaper Link</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -148,6 +158,8 @@ function ProjectForm() {
               <TableCell>{project.totalUnlocked}</TableCell>
               <TableCell>{project.remainingFunds}</TableCell>
               <TableCell>{project.numberOfInvestors}</TableCell>
+              <TableCell><a href={project.whitepaperLink} target="_blank" rel="noreferrer">{project.whitepaperLink}</a></TableCell>
+
             </TableRow>
           ))}
         </TableBody>
@@ -225,12 +237,14 @@ function ProjectForm() {
               <Grid item xs={12}>
                 <TextField type="url" label="Enter link to whitepaper" placeholder="Whitepaper" 
                 variant="outlined" fullWidth 
+                name="whitepaperLink"
+                value={formData.whitepaperLink}
+                onChange={handleChange}
                 />
               </Grid>
               <Grid item xs={12}>
                 <Button type="submit" variant="contained" 
                 color="primary" fullWidth
-                value={formData.fundraisingDeadline}
                 onClick={handleSubmit}
                 > Submit
                 </Button>
