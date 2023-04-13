@@ -54,7 +54,7 @@ function HomePage()  {
           <Card >
             <CardContent> 
               <img 
-                src="../seed_2.png" 
+                src="/seed_2.png" 
                 alt="test image"
                 style={{
                   maxWidth: "100%",
