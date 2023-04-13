@@ -72,7 +72,7 @@ module.exports = async function(deployer, _network, accounts) {
 	const token_DAI_Goerli_address = "0xdc31Ee1784292379Fbb2964b3B9C4124D8F89C60";
 	const token_DAI_Mumbai_address = "0xb973D2876c4F161439AD05f1dAe184dbD594e04E";
 	
-	await deployer.deploy(FundraisingProjects, token_DAI_Mumbai_address, projectInfoInstance.address);
+	await deployer.deploy(FundraisingProjects, token_DAI_Goerli_address, projectInfoInstance.address);
 	const fundraisingProjectsInstance = await FundraisingProjects.deployed();
 
 	// Deploy VoteUnlockFunds contract with SeedToken, ProjectInfo, and FundraisingProjects addresses as constructor arguments

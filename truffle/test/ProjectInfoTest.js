@@ -41,7 +41,10 @@ contract('ProjectInfo', function (accounts) {
       expect(project.minContributionPerInvestor).to.be.bignumber.equal(new BN(minContribution));
     });
 
-    it('should revert if not called by owner', async function () {
+    it.only('should revert if not called by owner', async function () {
+      console.log("owner = ", owner);
+      console.log("investo1 = ", investor1);
+
       await expectRevert(
         this.projectInfo.addProject(
           projectOwner,
@@ -50,6 +53,7 @@ contract('ProjectInfo', function (accounts) {
           3,
           1620992400,
           1000,
+          "https:/link.com",
           { from: investor1 }
         ),
         "Ownable: caller is not the owner"

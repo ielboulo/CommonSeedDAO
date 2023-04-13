@@ -97,6 +97,16 @@ module.exports = {
       },
       network_id: 80001
     },
+
+    // Sepolia 
+    sepolia: {
+      provider: function() {
+        return new HDWalletProvider(`${process.env.MNEMONIC}`, `https://sepolia.infura.io/v3/${process.env.INFURA_ID}`)
+      },
+      network_id: '11155111',
+      networkCheckTimeout: 10000,
+      timeoutBlocks: 200
+    },
   },
 
   // Set default mocha options here, use special reporters, etc.

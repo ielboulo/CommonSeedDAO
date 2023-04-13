@@ -254,7 +254,7 @@ contract ProjectInfo  is Ownable {
     function getFundraisingStatus (uint _projectId) external view returns(FundraisingStatus){
         return projectsPI[_projectId].fundraisingStatus;
     }
-
+//Ajouter 
     function setFundraisingStatus (uint _projectId, FundraisingStatus _newStatus) external {
         projectsPI[_projectId].fundraisingStatus = _newStatus;
     }
