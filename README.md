@@ -6,22 +6,17 @@ Through the voting system, funds are only collected if the project is approved b
 # Technical Aspects: 
 
 1. Programmation language :
-  a. For smart contracts :Solidity
-  b. For unitary tests : JavaScript
-  c. For front-end : React
-
-3. Framework of developpement : Truffle React Box
-
-4.  Blockchain : Les smart contracts sont déployés sur la blockchain Ethereum
-
-5.  Environnement of developpement :
-  a. Ganache 
-  b. Sepolia Testnet 
-  c. Wallet MetaMask
-
-6. Libraries :
-  a. OpenZeppelin : ERC-20, Ownable.
-  b. truffle/hdwallet-provider
-
-7. Front-end : React / Material UI / React-Router-Dom
+   - For smart contracts :Solidity
+   - For unitary tests : JavaScript
+   - For front-end : React
+2. Framework of developpement : Truffle React Box
+3. Blockchain : Les smart contracts sont déployés sur la blockchain Ethereum
+4. Environnement of developpement :
+   - Ganache
+   - Sepolia Testnet
+   - Wallet MetaMask
+5. Libraries :
+   - OpenZeppelin : ERC-20, Ownable.
+   - truffle/hdwallet-provider
+6. Front-end : React / Material UI / React-Router-Dom
  
