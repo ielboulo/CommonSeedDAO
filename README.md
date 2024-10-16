@@ -1,3 +1,6 @@
+
+<img width="1436" alt="Screenshot 2024-10-16 at 04 32 14" src="https://github.com/user-attachments/assets/6563786d-2db8-48f1-85fe-84e6b76bd6fd">
+
 # Common SEED DAO - Crowdfunding Securely 
 "Common Seed" is a Crowdfunding DAO offering an innovative solution for secure blockchain investment. Our three key values are Simplicity, Security, and Monitoring. We provide a platform that facilitates investment tracking for both beginner and experienced investors while guaranteeing close fund management.
 
